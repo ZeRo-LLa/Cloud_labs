@@ -1,0 +1,79 @@
+[
+  {
+    "name": "Ferrari SF-24",
+    "engine": "Ferrari",
+    "price": 15500000,
+    "description": "Scuderia Ferrari - Italian Legend",
+    "image": "/assets/ferrari.jpg"
+  },
+  {
+    "name": "Red Bull RB20",
+    "engine": "Honda RBPT",
+    "price": 16500000,
+    "description": "Oracle Red Bull Racing - Aero Dominance",
+    "image": "/assets/redbull.jpg"
+  },
+  {
+    "name": "Mercedes W15",
+    "engine": "Mercedes",
+    "price": 14800000,
+    "description": "Mercedes-AMG Petronas - Silver Arrows",
+    "image": "/assets/mercedes.jpg"
+  },
+  {
+    "name": "McLaren MCL38",
+    "engine": "Mercedes",
+    "price": 13500000,
+    "description": "McLaren Formula 1 Team - Papaya Pride",
+    "image": "/assets/mclaren.jpg"
+  },
+  {
+    "name": "Aston Martin AMR24",
+    "engine": "Mercedes",
+    "price": 12000000,
+    "description": "Aston Martin Aramco - British Racing Green",
+    "image": "/assets/aston.jpg"
+  },
+  {
+    "name": "Alpine A524",
+    "engine": "Renault",
+    "price": 11000000,
+    "description": "BWT Alpine F1 Team - French Power",
+    "image": "/assets/alpine.jpg"
+  },
+  {
+    "name": "Williams FW46",
+    "engine": "Mercedes",
+    "price": 10500000,
+    "description": "Williams Racing - Historic Legacy",
+    "image": "/assets/williams.jpg"
+  },
+  {
+    "name": "VCARB 01",
+    "engine": "Honda RBPT",
+    "price": 10000000,
+    "description": "Visa Cash App RB - Faenza Roots",
+    "image": "/assets/rb.jpg"
+  },
+  {
+    "name": "Audi A1",
+    "engine": "Audi",
+    "price": 14000000,
+    "description": "New team - Audi",
+    "image": "/assets/audi.jpg"
+  },
+  {
+    "name": "Haas VF-24",
+    "engine": "Ferrari",
+    "price": 9500000,
+    "description": "MoneyGram Haas F1 Team - American Spirit",
+    "image": "/assets/haas.jpg"
+  },
+  {
+    "name": "Cadillac C1",
+    "engine": "Cadillac",
+    "price": 13000000,
+    "description": "Future Prospect - Cadillac TEAM",
+    "image": "/assets/cadillac.jpg"
+  }
+]

@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+
+# Секрети і стан Terraform
+.env
+*.tfvars
+!terraform.tfvars.example
+*.tfstate
+*.tfstate.*
+.terraform/
+crash.log
+
+# Node
+node_modules/

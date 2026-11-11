@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:16.4-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-f1}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Скопіюй .env.example у .env і задай пароль}
+      POSTGRES_DB: ${POSTGRES_DB:-f1}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-f1} -d ${POSTGRES_DB:-f1}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  api:
+    build: .
+    environment:
+      PORT: 5005
+      DATABASE_URL: postgres://${POSTGRES_USER:-f1}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-f1}
+    ports:
+      - "5005:5005"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:
