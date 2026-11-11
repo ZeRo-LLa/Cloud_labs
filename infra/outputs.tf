@@ -20,3 +20,8 @@ output "db_endpoint" {
   description = "Адреса бази (доступна лише зсередини VPC)"
   value       = aws_db_instance.main.address
 }
+
+output "github_actions_role_arn" {
+  description = "Роль, яку GitHub Actions бере через OIDC"
+  value       = aws_iam_role.github_actions.arn
+}

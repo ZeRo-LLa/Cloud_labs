@@ -32,3 +32,15 @@ variable "db_instance_class" {
   type        = string
   default     = "db.t4g.micro"
 }
+
+variable "github_repo" {
+  description = "Репозиторій GitHub у форматі власник/репозиторій, якому дозволено деплой"
+  type        = string
+  default     = "ZeRo-LLa/Cloud_labs"
+}
+
+variable "github_branch" {
+  description = "Гілка, з якої дозволено деплой"
+  type        = string
+  default     = "main"
+}

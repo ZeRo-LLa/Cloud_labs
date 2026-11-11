@@ -113,4 +113,10 @@ resource "aws_ecs_service" "app" {
     aws_lb_listener.http,
     aws_secretsmanager_secret_version.database_url,
   ]
+
+  # Нову ревізію task definition реєструє GitHub Actions (образ з тегом = хеш коміту).
+  # Без цього terraform apply відкотив би сервіс на старий образ.
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
 }

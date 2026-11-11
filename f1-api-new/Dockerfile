@@ -10,8 +10,12 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY src ./src
 COPY data ./data
 
+# Хеш коміту, з якого зібрано образ (передає CI). Стоїть після npm ci, щоб не ламати кеш шарів
+ARG GIT_SHA=dev
+
 ENV NODE_ENV=production \
-    PORT=5005
+    PORT=5005 \
+    GIT_SHA=$GIT_SHA
 
 # Процес працює не від root (користувач node є в образі)
 USER node

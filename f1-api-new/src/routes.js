@@ -41,7 +41,7 @@ const parseId = (req, res) => {
 router.get('/health', async (req, res) => {
   try {
     await pool.query('SELECT 1');
-    res.json({ status: 'ok', database: 'up' });
+    res.json({ status: 'ok', database: 'up', version: process.env.GIT_SHA || 'dev' });
   } catch (err) {
     res.status(503).json({ status: 'error', database: 'down' });
   }
