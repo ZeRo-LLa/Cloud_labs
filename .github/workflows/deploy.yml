@@ -17,7 +17,7 @@ env:
   ECR_REPOSITORY: f1-shop-api
   ECS_CLUSTER: f1-shop-cluster
   ECS_SERVICE: f1-shop-api
-  AWS_ROLE_ARN: arn:aws:iam::719312762931:role/f1-shop-github-actions
+  AWS_ROLE_ARN: arn:aws:iam::705496898703:role/f1-shop-github-actions
 
 concurrency:
   group: deploy
