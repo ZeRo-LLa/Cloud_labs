@@ -18,7 +18,7 @@ function validate(body, { partial = false } = {}) {
   const b = body || {};
   const isStr = (v) => typeof v === 'string' && v.trim() !== '';
 
-  if (!partial || b.name !== undefined) if (!isStr(b.name)) errors.push('name: обовʼязковий рядок');
+  if (!partial || b.name !== undefined) if (!isStr(b.name)) errors.push('name: пук пук');
   if (!partial || b.engine !== undefined) if (!isStr(b.engine)) errors.push('engine: обовʼязковий рядок');
   if (!partial || b.price !== undefined)
     if (typeof b.price !== 'number' || !Number.isFinite(b.price) || b.price < 0)
