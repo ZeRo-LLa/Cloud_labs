@@ -10,6 +10,15 @@ resource "aws_iam_openid_connect_provider" "github" {
   ]
 }
 
+locals {
+  github_owner = split("/", var.github_repo)[0]
+  github_name  = split("/", var.github_repo)[1]
+
+  # GitHub записує в sub числові ID власника і репозиторію:
+  # repo:<власник>@<id>/<репозиторій>@<id>:ref:refs/heads/<гілка>
+  github_sub = "repo:${local.github_owner}@${var.github_owner_id}/${local.github_name}@${var.github_repo_id}:ref:refs/heads/${var.github_branch}"
+}
+
 data "aws_iam_policy_document" "github_assume" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
@@ -29,7 +38,7 @@ data "aws_iam_policy_document" "github_assume" {
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.github_repo}:ref:refs/heads/${var.github_branch}"]
+      values   = [local.github_sub]
     }
   }
 }

@@ -44,3 +44,15 @@ variable "github_branch" {
   type        = string
   default     = "main"
 }
+
+variable "github_owner_id" {
+  description = "Числовий ID власника репозиторію на GitHub (береться з поля sub токена)"
+  type        = string
+  default     = "176626641"
+}
+
+variable "github_repo_id" {
+  description = "Числовий ID репозиторію на GitHub (береться з поля sub токена)"
+  type        = string
+  default     = "1453344104"
+}
