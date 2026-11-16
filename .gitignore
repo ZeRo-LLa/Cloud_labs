@@ -12,3 +12,7 @@ crash.log
 
 # Node
 node_modules/
+*.tfstate
+*.tfstate.*
+.terraform/
+.DS_Store

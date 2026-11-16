@@ -5,6 +5,12 @@ resource "aws_cloudwatch_log_group" "app" {
 
 resource "aws_ecs_cluster" "main" {
   name = "${var.project}-cluster"
+
+  # Потрібно для графіків RunningTaskCount / DesiredTaskCount на дашборді (завдання 3)
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
 }
 
 # Роль, від імені якої ECS тягне образ, пише логи і читає секрет
@@ -114,9 +120,11 @@ resource "aws_ecs_service" "app" {
     aws_secretsmanager_secret_version.database_url,
   ]
 
-  # Нову ревізію task definition реєструє GitHub Actions (образ з тегом = хеш коміту).
-  # Без цього terraform apply відкотив би сервіс на старий образ.
+  # task_definition: нову ревізію реєструє GitHub Actions (образ з тегом = хеш коміту),
+  #   без цього terraform apply відкотив би сервіс на старий образ.
+  # desired_count: його тепер змінює автомасштабування (autoscaling.tf),
+  #   без цього terraform apply скидав би кількість екземплярів назад до 1.
   lifecycle {
-    ignore_changes = [task_definition]
+    ignore_changes = [task_definition, desired_count]
   }
 }
