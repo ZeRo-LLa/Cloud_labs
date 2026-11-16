@@ -67,16 +67,19 @@ export default function (data) {
   }
   const newId = created.json('id');
 
-  // 9 читань
+  // 9 читань. Тег name групує адреси з різними id в одну метрику (інакше k6 створює
+  // окрему метрику на кожен унікальний id і скаржиться на високу кардинальність).
+  const byId = { tags: { name: 'GET /products/:id' } };
+  const byEngine = { tags: { name: 'GET /products?engine=' } };
   const reads = [
     http.get(`${BASE_URL}/products`), // 1: список
-    http.get(`${BASE_URL}/products/${newId}`), // 2: щойно створений болід
-    http.get(`${BASE_URL}/products/${pick(data.seededIds)}`), // 3-5: існуючі боліди
-    http.get(`${BASE_URL}/products/${pick(data.seededIds)}`),
-    http.get(`${BASE_URL}/products/${pick(data.seededIds)}`),
-    http.get(`${BASE_URL}/products?engine=${encodeURIComponent(pick(ENGINES))}`), // 6-8: фільтр за двигуном
-    http.get(`${BASE_URL}/products?engine=${encodeURIComponent(pick(ENGINES))}`),
-    http.get(`${BASE_URL}/products?engine=${encodeURIComponent(pick(ENGINES))}`),
+    http.get(`${BASE_URL}/products/${newId}`, byId), // 2: щойно створений болід
+    http.get(`${BASE_URL}/products/${pick(data.seededIds)}`, byId), // 3-5: існуючі боліди
+    http.get(`${BASE_URL}/products/${pick(data.seededIds)}`, byId),
+    http.get(`${BASE_URL}/products/${pick(data.seededIds)}`, byId),
+    http.get(`${BASE_URL}/products?engine=${encodeURIComponent(pick(ENGINES))}`, byEngine), // 6-8: фільтр за двигуном
+    http.get(`${BASE_URL}/products?engine=${encodeURIComponent(pick(ENGINES))}`, byEngine),
+    http.get(`${BASE_URL}/products?engine=${encodeURIComponent(pick(ENGINES))}`, byEngine),
     http.get(`${BASE_URL}/products`), // 9: список ще раз
   ];
   for (const r of reads) {
@@ -84,7 +87,10 @@ export default function (data) {
   }
 
   // Прибирання, щоб база не розросталась (це додаткова операція запису, окрім основної)
-  http.del(`${BASE_URL}/products/${newId}`, null, JSON_HEADERS);
+  http.del(`${BASE_URL}/products/${newId}`, null, {
+    ...JSON_HEADERS,
+    tags: { name: 'DELETE /products/:id' },
+  });
 
   sleep(0.2); // коротка пауза між ітераціями
 }
