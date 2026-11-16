@@ -75,6 +75,12 @@ resource "aws_ecs_task_definition" "app" {
         { name = "PORT", value = "5005" },
         { name = "DB_SSL", value = "true" },
         { name = "CORS_ORIGIN", value = "*" },
+
+        # Кеш (лабораторна 2, завдання 5)
+        { name = "REDIS_URL", value = "redis://${aws_elasticache_cluster.cache.cache_nodes[0].address}:${aws_elasticache_cluster.cache.cache_nodes[0].port}" },
+        { name = "CACHE_ENABLED", value = "true" },
+        { name = "CACHE_TTL_SECONDS", value = tostring(var.cache_ttl_seconds) },
+        { name = "CACHE_INVALIDATE_ON_WRITE", value = tostring(var.cache_invalidate_on_write) },
       ]
 
       # DATABASE_URL потрапляє в контейнер як змінна середовища зі Secrets Manager

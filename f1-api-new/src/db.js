@@ -2,6 +2,7 @@ const { Pool } = require('pg');
 const fs = require('fs');
 const path = require('path');
 const config = require('./config');
+const { stats } = require('./cache');
 
 const pool = new Pool({
   connectionString: config.databaseUrl,
@@ -46,4 +47,11 @@ async function init() {
   }
 }
 
-module.exports = { pool, init };
+// Запити застосунку до бази рахуємо, щоб порівняти навантаження на базу з кешем і без нього.
+// (Службові запити старту і health check лічильник не враховує: вони йдуть напряму через pool.)
+const query = (text, params) => {
+  stats.dbQueries++;
+  return pool.query(text, params);
+};
+
+module.exports = { pool, init, query };

@@ -13,6 +13,7 @@ REST API для магазину болідів Формули 1. Express + Post
 | PUT | `/products/:id` | повна заміна |
 | PATCH | `/products/:id` | часткове оновлення |
 | DELETE | `/products/:id` | видалити |
+| GET | `/cache/stats` | лічильники кешу: влучання, промахи, запити до бази |
 
 ## Запуск через Docker (рекомендовано)
 
@@ -47,6 +48,10 @@ npm start
 | `PORT` | 5005 | порт застосунку |
 | `DB_SSL` | false | `true`, якщо керована база вимагає SSL |
 | `CORS_ORIGIN` | `*` | дозволений origin фронтенду |
+| `CACHE_ENABLED` | false | `true` вмикає кеш списків болідів (cache-aside) |
+| `REDIS_URL` | немає | адреса Redis; без неї кеш працює в памʼяті процесу |
+| `CACHE_TTL_SECONDS` | 30 | скільки секунд запис живе в кеші |
+| `CACHE_INVALIDATE_ON_WRITE` | false | `true`: після запису кеш списків видаляється одразу |
 
 ## Як перевірити, що все працює
 

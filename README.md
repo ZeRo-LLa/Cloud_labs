@@ -18,7 +18,9 @@ http://f1-shop-alb-816572861.eu-north-1.elb.amazonaws.com
 .
 ├── f1-api-new/      REST API (Express + PostgreSQL), Dockerfile, compose.yaml
 ├── f1-cars-shop/    фронтенд на React
-├── infra/           Terraform: VPC, RDS, ECR, ECS Fargate, ALB, бюджет
+├── infra/           Terraform: VPC, RDS, ECR, ECS Fargate, ALB, автомасштабування, моніторинг, Redis
+├── loadtest/        навантажувальний тест k6 і скрипти запуску
+├── docs/            документи лабораторної 2 (масштабування, тест, сповіщення, кеш)
 └── README.md
 ```
 
@@ -32,6 +34,7 @@ http://f1-shop-alb-816572861.eu-north-1.elb.amazonaws.com
 - База даних у приватних підмережах без публічної адреси. Security group бази пускає порт 5432 лише від security group застосунку.
 - Рядок підключення до бази зберігається в AWS Secrets Manager і потрапляє в контейнер як змінна середовища `DATABASE_URL`.
 - Health check балансувальника перевіряє `GET /health`.
+- Читання списку болідів кешується в Redis (ElastiCache) у приватних підмережах за схемою cache-aside, докладніше в `docs/CACHE.md`.
 - Усі ресурси описані в Terraform.
 
 ## API
@@ -45,6 +48,7 @@ http://f1-shop-alb-816572861.eu-north-1.elb.amazonaws.com
 | PUT | `/products/:id` | повна заміна |
 | PATCH | `/products/:id` | часткове оновлення |
 | DELETE | `/products/:id` | видалити |
+| GET | `/cache/stats` | лічильники кешу |
 
 ## Локальний запуск (Docker)
 

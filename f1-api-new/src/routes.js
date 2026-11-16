@@ -1,5 +1,6 @@
 const express = require('express');
-const { pool } = require('./db');
+const { pool, query } = require('./db');
+const cache = require('./cache');
 
 const router = express.Router();
 
@@ -40,7 +41,7 @@ const parseId = (req, res) => {
 // Health check: перевіряє, що застосунок живий і база відповідає.
 router.get('/health', async (req, res) => {
   try {
-    await pool.query('SELECT 1');
+    await pool.query('SELECT 1'); // напряму, щоб health check не рахувався як навантаження
     res.json({ status: 'ok', database: 'up', version: process.env.GIT_SHA || 'dev' });
   } catch (err) {
     res.status(503).json({ status: 'error', database: 'down' });
@@ -48,13 +49,27 @@ router.get('/health', async (req, res) => {
 });
 
 // GET /products?engine=Mercedes
+// Найнавантаженіша операція читання: кешується за схемою cache-aside (див. cache.js).
 router.get('/products', async (req, res, next) => {
   try {
     const { engine } = req.query;
-    const { rows } = engine
-      ? await pool.query('SELECT * FROM products WHERE engine = $1 ORDER BY id', [engine])
-      : await pool.query('SELECT * FROM products ORDER BY id');
-    res.json(rows.map(toDto));
+    const key = `products:list:${engine || 'all'}`;
+    const { body, source } = await cache.getOrLoad(key, async () => {
+      const { rows } = engine
+        ? await query('SELECT * FROM products WHERE engine = $1 ORDER BY id', [engine])
+        : await query('SELECT * FROM products ORDER BY id');
+      return JSON.stringify(rows.map(toDto));
+    });
+    res.set('X-Cache', source).type('json').send(body);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Лічильники кешу для порівняння "без кешу / з кешем" (дані не чутливі)
+router.get('/cache/stats', async (req, res, next) => {
+  try {
+    res.json(await cache.getStats());
   } catch (err) {
     next(err);
   }
@@ -64,7 +79,7 @@ router.get('/products/:id', async (req, res, next) => {
   try {
     const id = parseId(req, res);
     if (id === null) return;
-    const { rows } = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
+    const { rows } = await query('SELECT * FROM products WHERE id = $1', [id]);
     if (!rows.length) return res.status(404).json({ error: 'Продукт не знайдено' });
     res.json(toDto(rows[0]));
   } catch (err) {
@@ -77,11 +92,12 @@ router.post('/products', async (req, res, next) => {
     const errors = validate(req.body);
     if (errors.length) return res.status(400).json({ errors });
     const { name, engine, price, description = '', image = '' } = req.body;
-    const { rows } = await pool.query(
+    const { rows } = await query(
       `INSERT INTO products (name, engine, price, description, image)
        VALUES ($1,$2,$3,$4,$5) RETURNING *`,
       [name, engine, price, description, image]
     );
+    await cache.invalidateLists();
     res.status(201).json(toDto(rows[0]));
   } catch (err) {
     next(err);
@@ -96,7 +112,7 @@ async function update(req, res, next, partial) {
     const errors = validate(req.body, { partial });
     if (errors.length) return res.status(400).json({ errors });
 
-    const cur = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
+    const cur = await query('SELECT * FROM products WHERE id = $1', [id]);
     if (!cur.rows.length) return res.status(404).json({ error: 'Продукт не знайдено' });
 
     const b = req.body;
@@ -108,11 +124,12 @@ async function update(req, res, next, partial) {
       description: b.description ?? (partial ? old.description : ''),
       image: b.image ?? (partial ? old.image : ''),
     };
-    const { rows } = await pool.query(
+    const { rows } = await query(
       `UPDATE products SET name=$1, engine=$2, price=$3, description=$4, image=$5
        WHERE id=$6 RETURNING *`,
       [next_.name, next_.engine, next_.price, next_.description, next_.image, id]
     );
+    await cache.invalidateLists();
     res.json(toDto(rows[0]));
   } catch (err) {
     next(err);
@@ -125,8 +142,9 @@ router.delete('/products/:id', async (req, res, next) => {
   try {
     const id = parseId(req, res);
     if (id === null) return;
-    const { rowCount } = await pool.query('DELETE FROM products WHERE id = $1', [id]);
+    const { rowCount } = await query('DELETE FROM products WHERE id = $1', [id]);
     if (!rowCount) return res.status(404).json({ error: 'Продукт не знайдено' });
+    await cache.invalidateLists();
     res.status(204).end();
   } catch (err) {
     next(err);

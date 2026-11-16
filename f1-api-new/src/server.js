@@ -3,6 +3,7 @@ const cors = require('cors');
 const config = require('./config');
 const { pool, init } = require('./db');
 const routes = require('./routes');
+const cache = require('./cache');
 
 const app = express();
 app.use(cors({ origin: config.corsOrigin }));
@@ -30,6 +31,7 @@ async function main() {
   const shutdown = () => {
     console.log('Зупинка...');
     server.close(async () => {
+      await cache.close();
       await pool.end();
       process.exit(0);
     });
