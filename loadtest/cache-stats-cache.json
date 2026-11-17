@@ -1,0 +1,10 @@
+{
+  "backend": "redis",
+  "cacheEnabled": true,
+  "ttlSeconds": 30,
+  "invalidateOnWrite": false,
+  "hits": 127896,
+  "misses": 170,
+  "hitRatio": 0.9987,
+  "dbQueries": 153777
+}
